@@ -6,6 +6,7 @@ import { resolvers } from '../imports/api/apolloServer/resolvers';
 import cors from 'cors';
 import { UserLearnedWords } from '../imports/collections/userLearnedWords';
 import { Comments } from '../imports/collections/commets';
+import { Words } from '../imports/collections/words';
 
 let corsOptions = {
   origin: function(origin, callback) {
@@ -55,6 +56,37 @@ const fakeComments = [
     message: 'Back to the future is a great movie',
   },
 ];
+
+const fakeWords = [
+  {
+    languageCode: 'es',
+    word: 'Papa',
+  },
+  {
+    languageCode: 'es',
+    word: 'Capitulo',
+  },
+  {
+    languageCode: 'es',
+    word: 'Vaso',
+  },
+  {
+    languageCode: 'es',
+    word: 'Computadora',
+  },
+  {
+    languageCode: 'es',
+    word: 'Celular',
+  },
+];
+
+fakeWords.forEach(item => {
+  const word = Words.findOne({ word: item.word });
+
+  if (!word) {
+    Words.insert(item);
+  }
+});
 
 fakeComments.forEach(comment => {
   const userComment = Comments.findOne({ message: comment.message });

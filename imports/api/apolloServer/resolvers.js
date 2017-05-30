@@ -1,5 +1,6 @@
 import { UserLearnedWords } from '../../collections/userLearnedWords';
 import { Comments } from '../../collections/commets';
+import { Words } from '../../collections/words';
 
 export const resolvers = {
   Mutation: {
@@ -10,6 +11,18 @@ export const resolvers = {
       return {
         _id: commentId,
         message: args.message,
+      };
+    },
+    addWord: (root, args, context) => {
+      console.log('resolver', 'Mutation', 'addComment', args);
+      Words.insert({
+        languageCode: args.languageCode,
+        word: args.word,
+      });
+
+      return {
+        languageCode: args.languageCode,
+        word: args.word,
       };
     },
   },
@@ -52,5 +65,32 @@ export const resolvers = {
 
       return comments;
     },
+    wordsByLanguageCode(root, args, context) {
+      console.log('resolver', 'Query', 'wordsByLanguageCode', args);
+      const words = Words.find({ languageCode: { $in: args.languageCodes } }).fetch();
+      const learnedWordsByLanguageCode = [];
+      const languages = {};
+      
+      if (words) {
+        words.forEach(function(word) {
+          if (!languages[word.languageCode]) {
+            languages[word.languageCode] = [];
+          }
+
+          languages[word.languageCode].push(word.word);
+        });
+
+        _.keys(languages).forEach(function(keyName) {
+          learnedWordsByLanguageCode.push({
+            languageCode: keyName,
+            words: languages[keyName]
+          });
+        });
+      }
+
+      console.log(learnedWordsByLanguageCode);
+
+      return learnedWordsByLanguageCode;
+    }
   }
 };
